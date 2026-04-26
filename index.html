@@ -72,7 +72,6 @@ h1 {
     font-size:12px;
     border:none;
     cursor:pointer;
-
     transition: all 0.15s ease;
     box-shadow: 0 3px 0 #142044;
 }
@@ -93,10 +92,44 @@ h1 {
         transform: scale(0.96);
     }
 }
+
+/* 🔒 잠금화면 */
+#lockScreen {
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:#1e2a5a;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    z-index:9999;
+    color:white;
+}
 </style>
 </head>
 
 <body>
+
+<!-- 🔒 비밀번호 화면 -->
+<div id="lockScreen">
+<h2 style="margin-bottom:15px;">접속 비밀번호</h2>
+
+<input type="password" id="pw" placeholder="비밀번호 입력"
+style="padding:10px; border-radius:6px; border:none; width:200px; text-align:center; margin-bottom:10px;">
+
+<button onclick="checkPw()" style="
+padding:10px 20px;
+border:none;
+border-radius:6px;
+background:white;
+color:#1e2a5a;
+font-weight:bold;
+cursor:pointer;
+">확인</button>
+
+<div id="error" style="color:#ffbaba; margin-top:10px;"></div>
+</div>
 
 <div class="container">
 
@@ -135,11 +168,39 @@ h1 {
 <div class="card"><div class="title">1012컴퍼니 <span class="size">(21MB)</span></div><button class="btn" onclick="downloadFile('1SDJDjblQ4jwECbNfHgcsydft3E4yzAI3')">다운로드</button></div>
 <div class="card"><div class="title">CTSA <span class="size">(657MB)</span></div><button class="btn" onclick="downloadFile('1z4enUoV8Ga_gDqrP7oQlrhdkwp67TCXW')">다운로드</button></div>
 <div class="card"><div class="title">YS컴퍼니 <span class="size">(31MB)</span></div><button class="btn" onclick="downloadFile('1-2fqmuF4cJBdYgwvVk6dOPXJD_PBzSkh')">다운로드</button></div>
+
 </div>
 
 </div>
 
 <script>
+// 🔒 비밀번호 (간단 암호화)
+const PASSWORD = btoa("0761");
+
+// 로그인 유지
+if (localStorage.getItem("auth") === "ok") {
+    document.getElementById("lockScreen").style.display = "none";
+}
+
+function checkPw() {
+    const input = btoa(document.getElementById("pw").value);
+
+    if (input === PASSWORD) {
+        localStorage.setItem("auth","ok");
+        document.getElementById("lockScreen").style.display = "none";
+    } else {
+        document.getElementById("error").innerText = "비밀번호가 틀렸습니다";
+    }
+}
+
+// 엔터 입력
+document.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+        checkPw();
+    }
+});
+
+// 다운로드 분기
 function isMobile() {
     return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
